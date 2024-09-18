@@ -63,6 +63,24 @@ namespace TigerStopSDKExample
                         {
                             Console.WriteLine("No connections were found.");
                         }
+                        if(con.Count == 1)
+                        {
+                            Console.WriteLine("Connecting to " + con[0].Key + "....");
+
+                            io = new TigerStop_IO(con[0].Value, con[0].Key);
+
+                            if (io.IsOpen)
+                            {
+                                Console.WriteLine("Successfully connected.");
+
+                                goto MainLoop;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Connection failed.");
+                                goto Start;
+                            }
+                        }
 
                         goto Start;
                     case "3":
