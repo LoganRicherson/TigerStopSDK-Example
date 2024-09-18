@@ -1,28 +1,48 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
-    <ProjectGuid>{E1B9B605-A11F-4293-8241-2C9865B43077}</ProjectGuid>
+    <!-- Change to target .NET 8 -->
+    <TargetFramework>net8.0</TargetFramework>
+
+    <!-- Exe Output Type -->
     <OutputType>Exe</OutputType>
-    <TargetFramework>net452</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    
+    <!-- Optional: If running on a specific architecture like Raspberry Pi (64-bit) -->
+    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+
+    <!-- Product Metadata -->
     <AssemblyTitle>TigerStopSDKExample</AssemblyTitle>
     <Product>TigerStopSDKExample</Product>
-    <Copyright>Copyright ©  2016</Copyright>
+    <Copyright>Copyright © 2016</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
+
+  <!-- Debug Build Configuration -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <DocumentationFile />
   </PropertyGroup>
+
+  <!-- Release Build Configuration -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
+
+  <!-- NuGet Package References -->
   <ItemGroup>
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="TigerStopAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\TigerStopSDK\TigerStopAPI\TigerStopAPI\bin\Debug\net45\TigerStopAPI.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <!-- Update for .NET Core/8 -->
+    <PackageReference Include="System.Data.DataSetExtensions" Version="4.6.0-preview3.19128.7" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+
+    <!-- Reference to the TigerStopAPI project, assuming it's been migrated to .NET -->
+    <ProjectReference Include="..\..\..\TigerStopSDK\TigerStopAPI\TigerStopAPI\TigerStopAPI.csproj" />
   </ItemGroup>
+
+  <!-- Optional: Clean build directories when switching architectures -->
+  <Target Name="CleanBuildArtifacts" BeforeTargets="Build">
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <RemoveDir Directories="$(BaseOutputPath)" />
+  </Target>
+
 </Project>
