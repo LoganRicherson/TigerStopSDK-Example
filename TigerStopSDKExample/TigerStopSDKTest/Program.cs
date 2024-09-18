@@ -27,7 +27,7 @@ namespace TigerStopSDKExample
                         string comport;
                         int baud;
                         Console.Write("Enter Comport : ");
-                        comport = Console.ReadLine().ToUpper();
+                        comport = Console.ReadLine();
                         Console.Write("Enter Baudrate : ");
                         baud = Convert.ToInt32(Console.ReadLine());
 
