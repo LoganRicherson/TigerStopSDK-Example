@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using TigerStopSDKExample;
+using System.Text.Json.Serialization;
 
 namespace TigerStopSDKExample
 {
@@ -257,12 +258,13 @@ public class TigerStopController : ControllerBase
         return BadRequest("Connection failed");
     }
 
-    [HttpPost("move/{position}")]
-    public IActionResult Move(int position)
+    [HttpPost("move/{whole}/{deci}")]
+    public IActionResult Move(int whole, int deci)
     {
         try
-        {
-            if (_tigerStopService.Move(position.ToString()))
+        { 
+            string combinedPosition = $"{whole}.{deci}";
+            if (_tigerStopService.Move(combinedPosition.ToString()))
             {
                 return Ok("Move successful");
             }
