@@ -257,12 +257,12 @@ public class TigerStopController : ControllerBase
         return BadRequest("Connection failed");
     }
 
-    [HttpPost("move")]
-    public IActionResult Move([FromBody] MoveRequest request)
+    [HttpPost("move/{position}")]
+    public IActionResult Move(int position)
     {
         try
         {
-            if (_tigerStopService.Move(request.Position))
+            if (_tigerStopService.Move(position.ToString()))
             {
                 return Ok("Move successful");
             }
@@ -275,13 +275,3 @@ public class TigerStopController : ControllerBase
     }
 }
 
-public class ConnectionRequest
-{
-    public string ComPort { get; set; }
-    public int BaudRate { get; set; }
-}
-
-public class MoveRequest
-{
-    public string Position { get; set; }
-}
