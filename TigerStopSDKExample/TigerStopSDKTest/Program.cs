@@ -1,6 +1,12 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft.AspNetCore.Mvc;
+using TigerStopSDKExample;
 
 namespace TigerStopSDKExample
 {
@@ -9,6 +15,27 @@ namespace TigerStopSDKExample
         static TigerStop_IO io;
 
         static void Main(string[] args)
+        {
+            if (args.Length > 0 && args[0] == "--web")
+            {
+                // Start Web API mode
+                CreateHostBuilder(args).Build().Run();
+            }
+            else
+            {
+                // Run as console application
+                RunConsoleApp();
+            }
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+
+        static void RunConsoleApp()
         {
             Console.WriteLine("Ready to connect....");
 
@@ -38,7 +65,6 @@ namespace TigerStopSDKExample
                         if (io.IsOpen)
                         {
                             Console.WriteLine("Successfully connected.");
-
                             goto MainLoop;
                         }
                         else
@@ -49,8 +75,7 @@ namespace TigerStopSDKExample
                     case "2":
                         Console.WriteLine("Searching....");
 
-                        List<KeyValuePair<string, int>> con = new List<KeyValuePair<string, int>>();
-                        con = TigerStop_IO.Connections();
+                        List<KeyValuePair<string, int>> con = TigerStop_IO.Connections();
 
                         if (con.Count > 0)
                         {
@@ -63,7 +88,7 @@ namespace TigerStopSDKExample
                         {
                             Console.WriteLine("No connections were found.");
                         }
-                        if(con.Count == 1)
+                        if (con.Count == 1)
                         {
                             Console.WriteLine("Connecting to " + con[0].Key + "....");
 
@@ -72,7 +97,6 @@ namespace TigerStopSDKExample
                             if (io.IsOpen)
                             {
                                 Console.WriteLine("Successfully connected.");
-
                                 goto MainLoop;
                             }
                             else
@@ -111,7 +135,7 @@ namespace TigerStopSDKExample
                     break;
                 }
             }
-            
+
             Exit:
 
             Console.WriteLine("Exiting....");
@@ -131,17 +155,13 @@ namespace TigerStopSDKExample
             switch (input[0])
             {
                 case "Exit":
-                case "EXIT":
                 case "exit":
                 case "x":
-                case "X":
                     exit = true;
                     break;
                 case "Move":
-                case "MOVE":
                 case "move":
                 case "m":
-                case "M":
                     if (io.MoveTo(input[1]))
                     {
                         Console.WriteLine("Move Successful");
@@ -152,344 +172,114 @@ namespace TigerStopSDKExample
                     }
 
                     exit = false;
-
                     break;
-                case "Cycle":
-                case "CYCLE":
-                case "cycle":
-                case "c":
-                case "C":
-                    if (io.CycleTool())
-                    {
-                        Console.WriteLine("Cycle Successful");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Cycle Unsuccessful");
-                    }
 
-                    exit = false;
-
-                    break;
-                case "Help":
-                case "HELP":
-                case "help":
-                case "h":
-                case "H":
-                    Console.WriteLine("==================================================\n" +
-                                      "                     -HELP-                       \n" +
-                                      "==================================================\n" +
-                                      "Move : Moves the machine to the desired position.\n" +
-                                      " - Move [position] | move [position] | MOVE [position] | M [position] | m [position] \n" +
-                                      "\n" +
-                                      "Cycle : Cycles the tool of the machine.\n" +
-                                      " - Cycle | cycle | CYCLE | c | C \n" +
-                                      "\n" +
-                                      "Home : Homes the machine, returning to the home position.\n" +
-                                      " - Home | home | HOME | hm | HM \n" +
-                                      "\n" +
-                                      "Sleep : Sets the drive to sleep.\n" +
-                                      " - Sleep | sleep | SLEEP | sl | SL \n" +
-                                      "\n" +
-                                      "Wake Up : Wakes the drive from sleep.\n" +
-                                      " - Wake | wake | WAKE | w | W \n" + 
-                                      "\n" +
-                                      "Analog : Returns the analog values tracked by the amp.\n" +
-                                      " - Analog | analog | ANALOG | a | A \n" +
-                                      " - Analog [1-5] | analog [1-5] | ANALOG [1-5] | a [1-5] | A [1-5] \n" +
-                                      "\n" +
-                                      "Log : Returns the log of commands and errors tracked be the amp.\n" +
-                                      " - Log | log | LOG | l | L \n" +
-                                      " - Log [index] | log [index] | LOG [index] | l [index] | L [index] \n" +
-                                      "\n" +
-                                      "Counters : Returns the counter values tracked by the amp.\n" +
-                                      " - Count | count | COUNT | ct | CT \n" +
-                                      " - Count [1-25] | count [1-25] | COUNT [1-25] | ct [1-25] | CT [1-25] \n" +
-                                      "\n" +
-                                      "Position : Returns the current position of the machine.\n" +
-                                      " - Pos | pos | POS | p | P \n" +
-                                      "\n" +
-                                      "Status : Returns the current status of the amp.\n" +
-                                      " - Status | status | STATUS | s | S \n" +
-                                      "\n" +
-                                      "Setting : Returns the value of the desired setting.\n" +
-                                      " - Sett [index] | sett [index] | SETT [index] | st [index] ST [index] \n" +
-                                      "\n" +
-                                      "Update Setting : Changes a specified setting to a specified value.\n" +
-                                      " - Updt [Index] [Value] | updt [Index] [Value] | UPDT [Index] [Value] | u [Index] [Value] | U [Index] [Value] \n" +
-                                      "\n" +
-                                      "IO Connection : Turns the specified IO connection on or off.\n" +
-                                      " - Io [IO#] [on/off] | io [IO#] [on/off] | IO [IO#] [on/off] | i [IO#] [on/off] | I [IO#] [on/off] \n" +
-                                      "\n" +
-                                      "Exit : Exit the program.\n" +
-                                      " - Exit | exit | EXIT | x | X \n");
-                    exit = false;
-                    break;
-                case "Analog":
-                case "ANALOG":
-                case "analog":
-                case "a":
-                case "A":
-                    if (input.Length > 1)
-                    {
-                        Console.WriteLine(io.GetAnalog(input[1]));
-                    }
-                    else
-                    {
-                        foreach (string s in io.GetAnalog())
-                        {
-                            Console.WriteLine(s);
-                        }
-                    }
-
-                    exit = false;
-
-                    break;
-                case "Log":
-                case "LOG":
-                case "log":
-                case "l":
-                case "L":
-                    if (input.Length > 1)
-                    {
-                        foreach (string s in io.GetLog(input[1]))
-                        {
-                            Console.WriteLine(s);
-                        }
-                    }
-                    else
-                    {
-                        foreach (string s in io.GetLog())
-                        {
-                            Console.WriteLine(s);
-                        }
-                    }
-
-                    exit = false;
-
-                    break;
-                case "Count":
-                case "COUNT":
-                case "count":
-                case "ct":
-                case "CT":
-                    if (input.Length > 1)
-                    {
-                        Console.WriteLine(io.GetCounter(input[1]));
-                    }
-                    else
-                    {
-                        foreach (string s in io.GetCounter())
-                        {
-                            Console.WriteLine(s);
-                        }
-                    }
-
-                    exit = false;
-
-                    break;
-                case "Pos":
-                case "POS":
-                case "pos":
-                case "p":
-                case "P":
-                    Console.WriteLine(io.GetPosition());
-
-                    exit = false;
-
-                    break;
-                case "Status":
-                case "STATUS":
-                case "status":
-                case "s":
-                case "S":
-
-                    Console.WriteLine(io.GetStatus());
-
-                    exit = false;
-
-                    break;
-                case "Sett":
-                case "SETT":
-                case "sett":
-                case "st":
-                case "ST":
-                    //A quick check of the first character in the second argument will determine if a setting name was sent or a setting index.
-                    // If a setting index, a digit, was found then GetSetting() can be called immediately.
-                    if (char.IsDigit(input[1], 0))
-                    {
-                        Console.WriteLine(io.GetSetting(Convert.ToInt32(input[1])));
-                    }
-                    // Else, the full setting name, not a digit, was found and the setting name needs to be concatenated.
-                    else if (!char.IsDigit(input[1], 0))
-                    {
-                        // 'newInput' is the same length as 'input' minus the command.
-                        string[] newInput = new string[input.Length - 1];
-
-                        Array.Copy(input, 1, newInput, 0, (input.Length - 1));
-
-                        string setting = string.Join(" ", newInput);
-
-                        Console.WriteLine(io.GetSetting(setting));
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
-                    exit = false;
-
-                    break;
-                case "Home":
-                case "HOME":
-                case "home":
-                case "hm":
-                case "HM":
-                    io.HomeDevice();
-
-                    Console.WriteLine("Home Complete");
-
-                    exit = false;
-                    
-                    break;
-                case "Sleep":
-                case "SLEEP":
-                case "sleep":
-                case "sl":
-                case "SL":
-                    io.DriveSleep();
-
-                    exit = false;
-
-                    break;
-                case "Wake":
-                case "WAKE":
-                case "wake":
-                case "w":
-                case "W":
-                    io.DriveWake();
-
-                    exit = false;
-
-                    break;
-                case "Updt":
-                case "UPDT":
-                case "updt":
-                case "u":
-                case "U":
-                    // A quick check of the first character in the second argument will determine if a setting name was sent or a setting index.
-                    // If a setting index, a digit, was found then UpdateSetting() can be called immediately.
-                    if (char.IsDigit(input[1], 0))
-                    {
-                        if (io.UpdateSetting(Convert.ToInt32(input[1]), Convert.ToDouble(input[2])))
-                        {
-                            Console.WriteLine("Update Successful.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Update Unsuccessful.");
-                        }
-
-                        exit = false;
-                    }
-                    // Else, the full setting name, not a digit, was found and the setting name needs to be concatenated.
-                    else
-                    {
-                        // 'newInput' is the same length as 'input' minus the command and the new setting value.
-                        string[] newInput = new string[input.Length - 2];
-
-                        Array.Copy(input, 1, newInput, 0, (input.Length - 2));
-
-                        string setting = string.Join(" ", newInput);
-
-                        if (io.UpdateSetting(setting, input[input.Length - 1]))
-                        {
-                            Console.WriteLine("Update Successful.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Update Unsuccessful.");
-                        }
-
-                        exit = false;
-                    }
-                    break;
-                case "io":
-                case "IO":
-                case "Io":
-                case "i":
-                case "I":
-                    if (input[2].ToLower() == "on")
-                    {
-                        if (!io.IO_Connection(Convert.ToInt32(input[1]), true))
-                        {
-                            goto default;
-                        }
-                    }
-                    else if (input[2].ToLower() == "off")
-                    {
-                        if (!io.IO_Connection(Convert.ToInt32(input[1]), false))
-                        {
-                            goto default;
-                        }
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
-                    exit = false;
-
-                    break;
-                case "measure":
-                case "MEASURE":
-                case "msr":
-                case "MSR":
-                    double length = io.RandomLengthMeasure();
-
-                    if (length > -1)
-                    {
-                        Console.WriteLine("Measured: " + length);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unable to measure length.");
-                    }
-
-                    exit = false;
-
-                    break;
-                case "scan":
-                case "SCAN":
-                case "sc":
-                case "SC":
-                    List<double> marks = io.ScanDefectedLength();
-
-                    if (marks.Count > 0)
-                    {
-                        foreach (double m in marks)
-                        {
-                            Console.WriteLine("Mark seen at: " + m);
-                        }
-
-                        Console.WriteLine("Length of material: " + marks[marks.Count - 1]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unable to scan material.");
-                    }
-
-                    exit = false;
-
-                    break;
                 default:
-                    Console.WriteLine("Invalid Command.\nType 'help' or 'h' to view list of available commands.\n");
+                    Console.WriteLine("Invalid Command.\nType 'help' to view list of available commands.\n");
                     exit = false;
                     break;
-
             }
 
             return exit;
         }
     }
+}
+
+// Startup.cs
+public class Startup 
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();  // Register API controllers
+        services.AddSingleton<TigerStopService>();  // Register TigerStopService as a singleton
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();  // Enable detailed error page in development
+        }
+
+        app.UseRouting();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();  // Map controller routes
+        });
+    }
+}
+
+// TigerStopService.cs
+public class TigerStopService
+{
+    private TigerStop_IO io;
+
+    public bool Connect(string comPort, int baudRate)
+    {
+        io = new TigerStop_IO(baudRate, comPort);
+        return io.IsOpen;
+    }
+
+    public bool Move(string position)
+    {
+        if (io == null || !io.IsOpen)
+        {
+            throw new InvalidOperationException("Not connected to TigerStop.");
+        }
+        return io.MoveTo(position);
+    }
+}
+
+// TigerStopController.cs
+
+[ApiController]
+[Route("api/[controller]")]
+public class TigerStopController : ControllerBase
+{
+    private readonly TigerStopService _tigerStopService;
+
+    public TigerStopController(TigerStopService tigerStopService)
+    {
+        _tigerStopService = tigerStopService;
+    }
+
+    [HttpPost("connect")]
+    public IActionResult Connect([FromBody] ConnectionRequest request)
+    {
+        bool isConnected = _tigerStopService.Connect(request.ComPort, request.BaudRate);
+        if (isConnected)
+        {
+            return Ok("Successfully connected");
+        }
+        return BadRequest("Connection failed");
+    }
+
+    [HttpPost("move")]
+    public IActionResult Move([FromBody] MoveRequest request)
+    {
+        try
+        {
+            if (_tigerStopService.Move(request.Position))
+            {
+                return Ok("Move successful");
+            }
+            return BadRequest("Move failed");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+}
+
+public class ConnectionRequest
+{
+    public string ComPort { get; set; }
+    public int BaudRate { get; set; }
+}
+
+public class MoveRequest
+{
+    public string Position { get; set; }
 }
