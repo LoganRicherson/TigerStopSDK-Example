@@ -39,10 +39,6 @@
     <ProjectReference Include="..\..\..\TigerStopSDK\TigerStopAPI\TigerStopAPI\TigerStopAPI.csproj" />
   </ItemGroup>
 
-  <!-- Optional: Clean build directories when switching architectures -->
-  <Target Name="CleanBuildArtifacts" BeforeTargets="Build">
-    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
-    <RemoveDir Directories="$(BaseOutputPath)" />
-  </Target>
+
 
 </Project>
