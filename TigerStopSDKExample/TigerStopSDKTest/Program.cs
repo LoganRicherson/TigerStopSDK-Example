@@ -214,10 +214,12 @@ public class Startup
 public class TigerStopService
 {
     private TigerStop_IO io;
+    private const string DefaultComPort = "/dev/ttyUSB0";  // Change as needed
+    private const int DefaultBaudRate = 9600;      // Change as needed
 
-    public bool Connect(string comPort, int baudRate)
+    public bool Connect()
     {
-        io = new TigerStop_IO(baudRate, comPort);
+        io = new TigerStop_IO(DefaultBaudRate, DefaultComPort);
         return io.IsOpen;
     }
 
@@ -245,9 +247,9 @@ public class TigerStopController : ControllerBase
     }
 
     [HttpPost("connect")]
-    public IActionResult Connect([FromBody] ConnectionRequest request)
+    public IActionResult Connect()
     {
-        bool isConnected = _tigerStopService.Connect(request.ComPort, request.BaudRate);
+        bool isConnected = _tigerStopService.Connect();
         if (isConnected)
         {
             return Ok("Successfully connected");
