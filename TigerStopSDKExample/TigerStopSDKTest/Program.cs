@@ -231,7 +231,13 @@ public class TigerStopService
         {
             throw new InvalidOperationException("Not connected to TigerStop.");
         }
-        return io.MoveTo(position);
+        else{
+            double currentPosition = io.GetPosition();
+            if(currentPosition == Convert.ToDouble(position)){
+                return true;
+            }
+            else return io.MoveTo(position);
+        }
     }
 }
 
