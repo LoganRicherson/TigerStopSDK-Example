@@ -275,12 +275,12 @@ public class TigerStopController : ControllerBase
     }
 
     [HttpPost("move/{whole}/{deci}")]
-    public IActionResult Move(int whole, int deci)
+    public IActionResult Move(int whole, string deci)
     {
         try
         { 
             string combinedPosition = $"{whole}.{deci}";
-            if (whole >= 148 || whole < 0 || deci < 0)
+            if (whole >= 148 || whole < 2)
             {
                 return BadRequest("Position out of range");
             }
