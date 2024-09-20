@@ -280,6 +280,10 @@ public class TigerStopController : ControllerBase
         try
         { 
             string combinedPosition = $"{whole}.{deci}";
+            if (whole >= 148 || whole < 0 || deci < 0)
+            {
+                return BadRequest("Position out of range");
+            }
             if (_tigerStopService.Move(combinedPosition.ToString()))
             {
                 return Ok("Move successful");
