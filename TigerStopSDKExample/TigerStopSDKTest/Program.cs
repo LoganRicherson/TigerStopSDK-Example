@@ -228,13 +228,14 @@ public class TigerStopService
 
     public bool Move(string position)
     {
+        const double margin = 0.007;
         if (io == null || !io.IsOpen)
         {
             throw new InvalidOperationException("Not connected to TigerStop.");
         }
         else{
             double currentPosition = io.GetPosition();
-            if(currentPosition == Convert.ToDouble(position)){
+            if(Math.Abs(currentPosition - Convert.ToDouble(position)) < margin){
                 //log current position and requested position are same
                 Console.WriteLine("No move required");
                 return true;
