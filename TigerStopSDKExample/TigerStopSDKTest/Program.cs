@@ -8,6 +8,7 @@ using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using TigerStopSDKExample;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TigerStopSDKExample
 {
@@ -234,9 +235,16 @@ public class TigerStopService
         else{
             double currentPosition = io.GetPosition();
             if(currentPosition == Convert.ToDouble(position)){
+                //log current position and requested position are same
+                Console.WriteLine("No move required");
                 return true;
             }
-            else return io.MoveTo(position);
+            else
+            {
+                Console.WriteLine("Current Position: " + currentPosition);
+                Console.WriteLine("Requested Position: " + position);
+                return io.MoveTo(position);
+            }
         }
     }
 }
