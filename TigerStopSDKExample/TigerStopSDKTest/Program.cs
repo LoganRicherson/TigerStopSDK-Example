@@ -222,14 +222,8 @@ public class TigerStopService
 
     public bool Connect()
     {
-        if(io.IsConnected){
-            return true;
-        }
-        else
-        {
-            io = new TigerStop_IO(DefaultBaudRate, DefaultComPort);
-            return io.IsOpen;
-        }
+        io = new TigerStop_IO(DefaultBaudRate, DefaultComPort);
+        return io.IsOpen;
     }
 
     public bool Move(string position)
