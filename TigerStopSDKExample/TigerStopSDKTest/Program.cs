@@ -222,7 +222,7 @@ public class TigerStopService
 
     public bool Connect()
     {
-        if(io.IsConnected){
+        if(io != null && io.IsOpen){
             return true;
         }
         else
