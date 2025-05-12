@@ -254,6 +254,15 @@ public class TigerStopService
             }
         }
     }
+
+    public double GetPosition()
+    {
+        if (io == null || !io.IsOpen)
+        {
+            throw new InvalidOperationException("Not connected to TigerStop.");
+        }
+        return io.GetPosition();
+    }
 }
 
 // TigerStopController.cs
@@ -279,6 +288,19 @@ public class TigerStopController : ControllerBase
         }
         return BadRequest("Connection failed");
     }
+    [HttpGet("position")]
+    public IActionResult GetPosition()
+    {
+        try
+        {
+            double position = _tigerStopService.GetPosition();
+            return Ok(position);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpPost("move/{whole}/{deci}")]
     public IActionResult Move(int whole, string deci)
@@ -286,7 +308,7 @@ public class TigerStopController : ControllerBase
         try
         { 
             string combinedPosition = $"{whole}.{deci}";
-            if (whole >= 148 || whole < 2)
+            if (whole >= 148 || whole < 2.75)
             {
                 return Ok("Position out of range");
             }
