@@ -217,7 +217,7 @@ public class Startup
 public class TigerStopService
 {
     private TigerStop_IO io;
-    private const string DefaultComPort = "/dev/ttyUSB0";  // Change as needed
+    private const string DefaultComPort = "/dev/ttyUSB1";  // Change as needed
     private const int DefaultBaudRate = 9600;      // Change as needed
 
     public bool Connect()
